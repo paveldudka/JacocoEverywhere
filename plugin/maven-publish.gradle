@@ -6,11 +6,25 @@ tasks.matching({ it instanceof Jar }).all {
     baseName ARTIFACT_NAME
 }
 
+def isReleaseBuild() {
+    return VERSION_NAME.contains("SNAPSHOT") == false
+}
+
+def resolvePublishRepository() {
+    def result
+    if (isReleaseBuild()) {
+        result = "file://${System.getProperty("user.home")}/.m2/repository"
+    } else {
+        result "file://$buildDir/.m2/repository"
+    }
+
+    result
+}
+
 task sourceJar(type: Jar) {
     from sourceSets.main.allSource
     classifier = 'sources'
 }
-
 
 task javadocJar(type: Jar, dependsOn: groovydoc) {
     classifier = 'javadoc'
@@ -22,11 +36,16 @@ artifacts {
     archives javadocJar
 }
 
+signing {
+    required { isReleaseBuild() }
+    sign configurations.archives
+}
+
 uploadArchives {
     repositories {
         mavenDeployer {
-//            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-            repository(url: "file://$buildDir/.m2")
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+            repository(url: resolvePublishRepository())
             pom.groupId = GROUP
             pom.artifactId = ARTIFACT_NAME
             pom.version = VERSION_NAME
@@ -38,7 +57,7 @@ uploadArchives {
                     license {
                         name POM_LICENCE_NAME
                         url POM_LICENCE_URL
-                        Distribution POM_LICENCE_DIST
+                        distribution POM_LICENCE_DIST
                     }
                 }
                 developers {
