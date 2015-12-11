@@ -1,0 +1,54 @@
+apply plugin: "maven"
+apply plugin: 'groovy'
+apply plugin: "signing"
+
+tasks.matching({ it instanceof Jar }).all {
+    baseName ARTIFACT_NAME
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+
+task javadocJar(type: Jar, dependsOn: groovydoc) {
+    classifier = 'javadoc'
+    from groovydoc.destinationDir
+}
+
+artifacts {
+    archives sourceJar
+    archives javadocJar
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+//            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+            repository(url: "file://$buildDir/.m2")
+            pom.groupId = GROUP
+            pom.artifactId = ARTIFACT_NAME
+            pom.version = VERSION_NAME
+            pom.project {
+                name POM_NAME
+                description POM_DESCRIPTION
+                url POM_URL
+                licenses {
+                    license {
+                        name POM_LICENCE_NAME
+                        url POM_LICENCE_URL
+                        Distribution POM_LICENCE_DIST
+                    }
+                }
+                developers {
+                    developer {
+                        id POM_DEVELOPER_ID
+                        name POM_DEVELOPER_NAME
+                    }
+                }
+            }
+
+        }
+    }
+}
