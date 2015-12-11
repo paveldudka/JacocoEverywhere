@@ -1,0 +1,31 @@
+apply plugin: 'groovy'
+apply plugin: "maven"
+
+def artifactName = "jacoco-everywhere"
+def description = "Gradle plugin which allows to generate Jacoco coverage report for both integration & unit tests"
+group = "com.trickyandroid"
+version = "0.1"
+
+jar.archiveName = "${artifactName}-${version}.jar"
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "$buildDir/.m2")
+            pom.project {
+                description "Test plugin"
+                artifactId artifactName
+                licenses {
+                    license {
+                        name "Apache License, Version 2.0"
+                        url "TODO: include url"
+                    } }
+            }
+        }
+    }
+}
