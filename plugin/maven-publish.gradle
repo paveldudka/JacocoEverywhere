@@ -1,13 +1,14 @@
-apply plugin: "maven"
+apply plugin: 'maven'
 apply plugin: 'groovy'
-apply plugin: "signing"
+apply plugin: 'signing'
 
 tasks.matching({ it instanceof Jar }).all {
     baseName ARTIFACT_NAME
 }
 
 def isReleaseBuild() {
-    return VERSION_NAME.contains("SNAPSHOT") == false
+    logger.info("is release buid: ${!VERSION_NAME.contains("SNAPSHOT")}")
+    return !VERSION_NAME.contains("SNAPSHOT")
 }
 
 def resolvePublishRepository() {
@@ -15,7 +16,8 @@ def resolvePublishRepository() {
     if (isReleaseBuild()) {
         result = "file://${System.getProperty("user.home")}/.m2/repository"
     } else {
-        result "file://$buildDir/.m2/repository"
+//        result = "file://$buildDir/.m2/repository"
+        result = "file://${System.getProperty("user.home")}/.m2/repository"
     }
 
     result
@@ -36,8 +38,13 @@ artifacts {
     archives javadocJar
 }
 
+gradle.taskGraph.whenReady { taskGraph ->
+    signArchives.onlyIf {
+        isReleaseBuild() && gradle.taskGraph.hasTask("uploadArchives")
+    }
+}
+
 signing {
-    required { isReleaseBuild() }
     sign configurations.archives
 }
 
