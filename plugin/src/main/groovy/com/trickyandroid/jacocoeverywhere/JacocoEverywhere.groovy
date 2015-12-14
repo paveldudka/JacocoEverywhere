@@ -12,29 +12,50 @@ class JacocoEverywhere implements Plugin<Project> {
     final static String JACOCO_REPORT_DOWNLOADER_TASK_NAME = "downloadJacocoReport"
     final static String GET_FIRST_CONNECTED_DEVICE_TASK_NAME = "getFirstConnectedDevice"
 
+    //coverage report task supplied by Android plugin
+    final static String COVERAGE_REPORT_TASK_NAME = "createDebugAndroidTestCoverageReport"
+    //unit test task provided by Android plugin
+    final static String UNIT_TEST_TASK_NAME = "testDebugUnitTest"
+    final static String INTEGRATION_TEST_TASK_NAME = "connectedDebugAndroidTest"
+    final static String JACOCO_AGENT_UNZIPPER_TASK_NAME = "unzipJacocoAgent"
+
     private Task deviceCheckerTask
 
     @Override
     void apply(Project project) {
-        resolveAndroidSDKLocation(project)
-        createTasks(project)
-
-        project.tasks.matching { it.name == "testDebugUnitTest" }.all {
-            it.mustRunAfter JACOCO_REPORT_DOWNLOADER_TASK_NAME
-            def append = "append=true"
-            def destFile = "destfile=${project.buildDir}/outputs/code-coverage/connected/coverage.ec"
-            it.jvmArgs "-javaagent:${project.buildDir}/intermediates/jacoco/jacocoagent.jar=$append,$destFile"
-            it.dependsOn "unzipJacocoAgent"
+        if (!project.plugins.hasPlugin("com.android.application") &&
+                !project.plugins.hasPlugin("com.android.library")) {
+            throw new GradleException("jacoco-everywhere plugin can be applied only to Android projects, so make sure that either com.android.application " +
+                    "or com.android.library plugin applied")
         }
 
-        project.tasks.matching { it.name == "createDebugAndroidTestCoverageReport" }.all {
-            it.dependsOn JACOCO_REPORT_DOWNLOADER_TASK_NAME
-            it.dependsOn "testDebugUnitTest"
+        project.ext.coverageEnabled = { project.android.buildTypes.debug.testCoverageEnabled }
+        project.ext.sdkPath = { resolveAndroidSDKLocation(project) }
+
+        createTasks(project)
+
+        project.afterEvaluate {
+            if (project.coverageEnabled()) {
+                project.logger.debug("Coverage enabled. Applying modifications")
+                project.tasks.matching { it.name == UNIT_TEST_TASK_NAME }.all {
+                    def append = "append=true"
+                    def destFile = "destfile=${project.buildDir}/outputs/code-coverage/connected/coverage.ec"
+                    it.jvmArgs "-javaagent:${project.buildDir}/intermediates/jacoco/jacocoagent.jar=$append,$destFile"
+                    it.mustRunAfter JACOCO_REPORT_DOWNLOADER_TASK_NAME
+                    it.dependsOn JACOCO_AGENT_UNZIPPER_TASK_NAME
+                }
+
+                project.tasks.matching { it.name == COVERAGE_REPORT_TASK_NAME }.all {
+                    it.dependsOn JACOCO_REPORT_DOWNLOADER_TASK_NAME
+                    it.dependsOn UNIT_TEST_TASK_NAME
+                }
+            } else {
+                project.logger.debug("Coverage disabled. Skipping modifications")
+            }
         }
     }
 
     void createTasks(Project project) {
-
         createDeviceCheckerTask(project)
         createJacocoReportDownloaderTask(project)
     }
@@ -48,7 +69,7 @@ class JacocoEverywhere implements Plugin<Project> {
         def task = project.task(JACOCO_REPORT_DOWNLOADER_TASK_NAME, type: Exec) {
             dependsOn GET_FIRST_CONNECTED_DEVICE_TASK_NAME
             commandLine(
-                    "${project.sdkPath}/platform-tools/adb",
+                    "${project.sdkPath()}/platform-tools/adb",
                     '-s',
                     "${-> deviceCheckerTask.device()}",
                     'pull',
@@ -57,12 +78,12 @@ class JacocoEverywhere implements Plugin<Project> {
         }
         task.group = TASK_GROUP
         task.description = "Pull Jacoco coverage report from SD card"
-        task.dependsOn("connectedDebugAndroidTest")
+        task.dependsOn(INTEGRATION_TEST_TASK_NAME)
     }
 
     void createDeviceCheckerTask(Project project) {
         def task = project.task(GET_FIRST_CONNECTED_DEVICE_TASK_NAME, type: Exec) {
-            commandLine("${project.sdkPath}/platform-tools/adb", 'devices')
+            commandLine("${project.sdkPath()}/platform-tools/adb", 'devices')
             standardOutput = new ByteArrayOutputStream()
             ext.device = {
                 if (standardOutput.toString()) {
@@ -80,7 +101,7 @@ class JacocoEverywhere implements Plugin<Project> {
         deviceCheckerTask = task
     }
 
-    static void resolveAndroidSDKLocation(Project project) {
+    static def resolveAndroidSDKLocation(Project project) {
         def sdkPath = getSdkLocationLocalProps(project)
         if (!sdkPath) sdkPath = getSdkLocationFromEnvVars(project)
         sdkPath
@@ -92,7 +113,7 @@ class JacocoEverywhere implements Plugin<Project> {
         } else {
             project.logger.debug("$LOG_TAG Found Android SDK: $sdkPath")
         }
-        project.ext.sdkPath = sdkPath
+        sdkPath
     }
 
     static def getSdkLocationFromEnvVars(Project project) {
