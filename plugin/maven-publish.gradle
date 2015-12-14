@@ -11,22 +11,36 @@ def isReleaseBuild() {
     return !VERSION_NAME.contains("SNAPSHOT")
 }
 
-def resolvePublishRepository() {
+def getReleaseRepositoryUrl() {
     def result
 
     if (hasProperty('PUBLISH_REPO_OVERRIDE')) {
         result = PUBLISH_REPO_OVERRIDE
     } else {
-        if (isReleaseBuild()) {
-            result = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-        } else {
-            result = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
+        result = RELEASE_REPOSITORY_URL
     }
-
-    println "resolved publish repo: $result"
-
+    println "release publish repo: $result"
     result
+}
+
+def getSnapshotRepositoryUrl() {
+    def result
+
+    if (hasProperty('PUBLISH_REPO_OVERRIDE')) {
+        result = PUBLISH_REPO_OVERRIDE
+    } else {
+        result = SNAPSHOT_REPOSITORY_URL
+    }
+    println "snapshot publish repo: $result"
+    result
+}
+
+def getRepositoryUsername() {
+    return hasProperty('NEXUS_USERNAME') ? NEXUS_USERNAME : ""
+}
+
+def getRepositoryPassword() {
+    return hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : ""
 }
 
 task sourceJar(type: Jar) {
@@ -59,10 +73,17 @@ uploadArchives {
     repositories {
         mavenDeployer {
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-            repository(url: resolvePublishRepository())
             pom.groupId = GROUP
             pom.artifactId = ARTIFACT_NAME
             pom.version = VERSION_NAME
+
+            repository(url: getReleaseRepositoryUrl()) {
+                authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+            }
+            snapshotRepository(url: getSnapshotRepositoryUrl()) {
+                authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+            }
+
             pom.project {
                 name POM_NAME
                 description POM_DESCRIPTION
