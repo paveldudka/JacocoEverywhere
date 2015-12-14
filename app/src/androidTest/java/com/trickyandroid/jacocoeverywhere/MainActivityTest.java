@@ -1,4 +1,4 @@
-package com.trickyandroid.jacococoverageeverywhere;
+package com.trickyandroid.jacocoeverywhere;
 
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.assertion.ViewAssertions;

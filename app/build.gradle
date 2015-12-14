@@ -6,7 +6,7 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        applicationId "com.trickyandroid.jacococoverageeverywhere"
+        applicationId "com.trickyandroid.jacocoeverywhere"
         minSdkVersion 16
         targetSdkVersion 23
         versionCode 1

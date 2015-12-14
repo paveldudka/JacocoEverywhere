@@ -1,4 +1,4 @@
-package com.trickyandroid.jacococoverageeverywhere;
+package com.trickyandroid.jacocoeverywhere;
 
 public class SomeUtilityClass {
 

@@ -1,4 +1,4 @@
-package com.trickyandroid.jacococoverageeverywhere;
+package com.trickyandroid.jacocoeverywhere;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
