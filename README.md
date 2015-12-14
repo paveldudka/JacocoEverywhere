@@ -41,6 +41,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'jacoco-everywhere'
 ```
 3) execute `./gradlew connectedCheck` from your command line
+
 4) Observe Jacoco test coverage report in `<your_project_dir>/<android_module>/build/reports/coverage/debug/index.html`
 
 
