@@ -13,12 +13,18 @@ def isReleaseBuild() {
 
 def resolvePublishRepository() {
     def result
-    if (isReleaseBuild()) {
-        result = "file://${System.getProperty("user.home")}/.m2/repository"
+
+    if (hasProperty('PUBLISH_REPO_OVERRIDE')) {
+        result = PUBLISH_REPO_OVERRIDE
     } else {
-//        result = "file://$buildDir/.m2/repository"
-        result = "file://${System.getProperty("user.home")}/.m2/repository"
+        if (isReleaseBuild()) {
+            result = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        } else {
+            result = "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
     }
+
+    println "resolved publish repo: $result"
 
     result
 }
@@ -33,6 +39,11 @@ task javadocJar(type: Jar, dependsOn: groovydoc) {
     from groovydoc.destinationDir
 }
 
+signing {
+    sign configurations.archives
+}
+
+
 artifacts {
     archives sourceJar
     archives javadocJar
@@ -42,10 +53,6 @@ gradle.taskGraph.whenReady { taskGraph ->
     signArchives.onlyIf {
         isReleaseBuild() && gradle.taskGraph.hasTask("uploadArchives")
     }
-}
-
-signing {
-    sign configurations.archives
 }
 
 uploadArchives {
