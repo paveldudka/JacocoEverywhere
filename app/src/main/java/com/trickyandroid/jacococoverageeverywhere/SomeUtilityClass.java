@@ -2,15 +2,18 @@ package com.trickyandroid.jacococoverageeverywhere;
 
 public class SomeUtilityClass {
 
-    public static int getOne() {
+    public SomeUtilityClass() {
+    }
+
+    public int getOne() {
         return 1;
     }
 
-    public static int getTwo() {
+    public int getTwo() {
         return 2;
     }
 
-    public static int getThree() {
+    public int getThree() {
         return 3;
     }
 }

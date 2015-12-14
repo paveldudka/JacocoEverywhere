@@ -11,6 +11,7 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -23,12 +24,23 @@ android {
     }
 }
 
-tasks.matching {it instanceof Test}.all {
+
+tasks.matching { it instanceof Test }.all {
     testLogging.events = ["failed", "passed", "skipped"]
 }
 
+ext.support_libs_version = '23.1.1'
+ext.espresso_version = '2.2'
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile "com.android.support:appcompat-v7:$support_libs_version"
+    compile "com.android.support:support-annotations:$support_libs_version"
+
+    androidTestCompile 'com.android.support.test:runner:0.4.1'
+    androidTestCompile 'com.android.support.test:rules:0.4.1'
+    androidTestCompile "com.android.support:support-annotations:$support_libs_version"
+    androidTestCompile "com.android.support.test.espresso:espresso-core:$espresso_version"
+
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.1.1'
 }

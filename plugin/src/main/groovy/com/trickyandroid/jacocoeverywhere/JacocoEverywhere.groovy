@@ -41,12 +41,12 @@ class JacocoEverywhere implements Plugin<Project> {
                     def append = "append=true"
                     def destFile = "destfile=${project.buildDir}/outputs/code-coverage/connected/coverage.ec"
                     it.jvmArgs "-javaagent:${project.buildDir}/intermediates/jacoco/jacocoagent.jar=$append,$destFile"
-                    it.mustRunAfter JACOCO_REPORT_DOWNLOADER_TASK_NAME
+//                    it.mustRunAfter JACOCO_REPORT_DOWNLOADER_TASK_NAME
                     it.dependsOn JACOCO_AGENT_UNZIPPER_TASK_NAME
                 }
 
                 project.tasks.matching { it.name == COVERAGE_REPORT_TASK_NAME }.all {
-                    it.dependsOn JACOCO_REPORT_DOWNLOADER_TASK_NAME
+//                    it.dependsOn JACOCO_REPORT_DOWNLOADER_TASK_NAME
                     it.dependsOn UNIT_TEST_TASK_NAME
                 }
             } else {
