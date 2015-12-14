@@ -8,11 +8,11 @@ class JacocoEverywhere implements Plugin<Project> {
     final static String LOG_TAG = "[Jacoco-Everywhere]"
 
     //coverage report task supplied by Android plugin
-    final static String COVERAGE_REPORT_TASK_NAME = "createDebugAndroidTestCoverageReport"
+    String COVERAGE_REPORT_TASK_NAME = "createDebugAndroidTestCoverageReport"
     //unit test task provided by Android plugin
-    final static String UNIT_TEST_TASK_NAME = "testDebugUnitTest"
-    final static String INTEGRATION_TEST_TASK_NAME = "connectedDebugAndroidTest"
-    final static String JACOCO_AGENT_UNZIPPER_TASK_NAME = "unzipJacocoAgent"
+    String UNIT_TEST_TASK_NAME = "testDebugUnitTest"
+    String INTEGRATION_TEST_TASK_NAME = "connectedDebugAndroidTest"
+    String JACOCO_AGENT_UNZIPPER_TASK_NAME = "unzipJacocoAgent"
 
     @Override
     void apply(Project project) {
@@ -23,6 +23,18 @@ class JacocoEverywhere implements Plugin<Project> {
         }
 
         project.ext.coverageEnabled = { project.android.buildTypes.debug.testCoverageEnabled }
+
+        project.gradle.taskGraph.whenReady {
+            def coverageReportTask = project.gradle.taskGraph.getAllTasks().find {
+                it.name == COVERAGE_REPORT_TASK_NAME
+            }
+            def unitTestTask = project.gradle.taskGraph.getAllTasks().find { it.name == UNIT_TEST_TASK_NAME }
+
+            //invalidate existing unit test results if we gather coverage.
+            if (coverageReportTask != null && unitTestTask != null) {
+                unitTestTask.outputs.upToDateWhen { false }
+            }
+        }
 
         project.afterEvaluate {
             if (project.coverageEnabled()) {
