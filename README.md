@@ -40,10 +40,10 @@ android {
 ```gradle
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
     }
     dependencies {
-        classpath 'com.trickyandroid:jacoco-everywhere:0.1.0-SNAPSHOT'
+        classpath 'com.trickyandroid:jacoco-everywhere:0.1.0'
     }
 }
 
