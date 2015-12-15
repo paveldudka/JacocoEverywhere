@@ -34,9 +34,19 @@ android {
     }
 }
 ```
-2) Apply `jacoco-coverage` plugin to your Android module:
+2) Add `jacoco-everywhere` dependency to Android module buildscript and apply `jacoco-everywhere` plugin:
 `build.gradle`:
+
 ```gradle
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.trickyandroid:jacoco-everywhere:0.1.0-SNAPSHOT'
+    }
+}
+
 apply plugin: 'com.android.application'
 apply plugin: 'jacoco-everywhere'
 ```
