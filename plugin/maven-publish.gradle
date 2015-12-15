@@ -95,6 +95,9 @@ uploadArchives {
                         distribution POM_LICENCE_DIST
                     }
                 }
+                scm {
+                    url POM_SCM_URL
+                }
                 developers {
                     developer {
                         id POM_DEVELOPER_ID
