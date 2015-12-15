@@ -65,7 +65,7 @@ artifacts {
 
 gradle.taskGraph.whenReady { taskGraph ->
     signArchives.onlyIf {
-        isReleaseBuild() && gradle.taskGraph.hasTask("uploadArchives")
+        isReleaseBuild() && gradle.taskGraph.getAllTasks().find({ it.name == "uploadArchives" }) != null
     }
 }
 

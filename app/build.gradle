@@ -1,13 +1,9 @@
 buildscript {
     repositories {
         mavenCentral()
-        mavenLocal()
-        maven {
-            url 'https://oss.sonatype.org/content/repositories/snapshots'
-        }
     }
     dependencies {
-        classpath 'com.trickyandroid:jacoco-everywhere:0.1.0-SNAPSHOT'
+        classpath 'com.trickyandroid:jacoco-everywhere:0.1.0'
     }
 }
 
