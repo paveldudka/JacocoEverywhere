@@ -3,6 +3,9 @@ apply from:'maven-publish.gradle'
 version = VERSION_NAME
 group = GROUP
 
+sourceCompatibility = JavaVersion.VERSION_1_6
+targetCompatibility = JavaVersion.VERSION_1_6
+
 dependencies {
     compile gradleApi()
     compile localGroovy()
