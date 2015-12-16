@@ -43,7 +43,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.trickyandroid:jacoco-everywhere:0.1.0'
+        classpath 'com.trickyandroid:jacoco-everywhere:0.1.1'
     }
 }
 
