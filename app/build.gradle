@@ -1,10 +1,10 @@
 buildscript {
     repositories {
-        mavenCentral()
         mavenLocal()
+        mavenCentral()
     }
     dependencies {
-        classpath 'com.trickyandroid:jacoco-everywhere:0.1.1'
+        classpath 'com.trickyandroid:jacoco-everywhere:0.2.0-SNAPSHOT'
     }
 }
 
@@ -32,6 +32,11 @@ android {
             testCoverageEnabled = true
         }
     }
+
+    productFlavors {
+        paid {}
+        free {}
+    }
 }
 
 tasks.matching { it instanceof Test }.all {
@@ -39,7 +44,7 @@ tasks.matching { it instanceof Test }.all {
 }
 
 ext.support_libs_version = '23.1.1'
-ext.espresso_version = '2.2'
+ext.espresso_version = '2.2.1'
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
