@@ -11,10 +11,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-    @Override public boolean onSearchRequested() {
-        return super.onSearchRequested();
-    }
-
     @Override protected void onStart() {
         super.onStart();
     }
