@@ -22,8 +22,14 @@ class JacocoEverywhere implements Plugin<Project> {
         this.logger = project.getLogger()
 
         project.afterEvaluate {
-            project.android.applicationVariants.all {
-                configureVariant(project, it)
+            if (project.plugins.hasPlugin("com.android.application")) {
+                project.android.applicationVariants.all {
+                    configureVariant(project, it)
+                }
+            } else {
+                project.android.libraryVariants.all {
+                    configureVariant(project, it)
+                }
             }
         }
     }
