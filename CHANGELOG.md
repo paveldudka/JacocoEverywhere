@@ -1,5 +1,9 @@
 Change Log
 ==========
+Version 0.2.1 *(2016-02-20)*
+----------------------------
+* Added support for library variants (thanks @explodes)
+
 Version 0.2.0 *(2016-02-01)*
 ----------------------------
 * [#1](https://github.com/paveldudka/JacocoEverywhere/issues/1) - Plugin is hardcoded to `debug` build type
