@@ -63,6 +63,8 @@ artifacts {
     archives javadocJar
 }
 
+//publish to Maven -> ./gradlew uploadArchives
+
 gradle.taskGraph.whenReady { taskGraph ->
     signArchives.onlyIf {
         isReleaseBuild() && gradle.taskGraph.getAllTasks().find({ it.name == "uploadArchives" }) != null

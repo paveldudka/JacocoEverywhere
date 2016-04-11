@@ -43,7 +43,7 @@ tasks.matching { it instanceof Test }.all {
     testLogging.events = ["failed", "passed", "skipped"]
 }
 
-ext.support_libs_version = '23.1.1'
+ext.support_libs_version = '23.3.0'
 ext.espresso_version = '2.2.1'
 
 dependencies {
