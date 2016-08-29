@@ -1,0 +1,17 @@
+apply plugin: 'com.novoda.bintray-release'
+
+publish {
+    userOrg = ORG_NAME
+    groupId = GROUP
+    artifactId = ARTIFACT_NAME
+    publishVersion = VERSION_NAME
+    bintrayUser = BINTRAY_USER
+    bintrayKey = BINTRAY_KEY
+    desc = POM_DESCRIPTION
+    website = POM_URL
+    licences = ['Apache-2.0']
+}
+
+afterEvaluate {
+    tasks.bintrayUpload.dependsOn('mavenJavadocJar', 'mavenSourcesJar', 'generatePomFileForMavenPublication')
+}

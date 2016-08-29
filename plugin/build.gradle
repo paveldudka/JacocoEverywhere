@@ -1,4 +1,5 @@
-apply from:'maven-publish.gradle'
+apply plugin: 'java'
+apply from: 'bintray-publish.gradle'
 
 version = VERSION_NAME
 group = GROUP
@@ -10,4 +11,3 @@ dependencies {
     compile gradleApi()
     compile localGroovy()
 }
-
