@@ -13,5 +13,5 @@ publish {
 }
 
 afterEvaluate {
-    tasks.bintrayUpload.dependsOn('mavenJavadocJar', 'mavenSourcesJar', 'generatePomFileForMavenPublication')
+    tasks.bintrayUpload.dependsOn('assemble', 'mavenJavadocJar', 'mavenSourcesJar', 'generatePomFileForMavenPublication')
 }
